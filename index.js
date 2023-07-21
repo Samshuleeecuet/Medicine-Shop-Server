@@ -169,12 +169,10 @@ async function run() {
 
     app.post('/bulb',async(req,res)=>{
       const status = req.body;
-      console.log(status)
       const query = {
         medicineId : status.id
       }
       const found = await medicineCollection.findOne(query)
-      console.log(found)
       const updateDoc = {
         $set: {
           bulb : status.status
