@@ -56,7 +56,7 @@ async function run() {
         const database = client.db('MedicineShop')
         const usersCollection = database.collection('users')
         const medicineCollection = database.collection('MedicineCollection')
-
+        const cartCollection = database.collection('userCart')
         app.post('/jwt',(req,res)=>{
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '24h'})
@@ -165,6 +165,35 @@ async function run() {
       }
       const found = await medicineCollection.find(query,options).toArray()
       res.send(found)
+    })
+
+
+    app.get('/addtocart',async(req,res)=>{
+      const email = req.query.email;
+      const query = {
+        email:email
+      }
+      const result = await cartCollection.find(query).toArray()
+      res.send(result)
+
+    })
+
+
+    app.post('/addtocart',async(req,res)=>{
+      const cart = req.body;
+      const medicineId = cart.medicineId;
+      const email = cart.email;
+      const found = await cartCollection.findOne({
+        email: email,
+        medicineId: medicineId
+      })
+      if(found){
+        return res.send({message: 'Already Added'})
+      }else{
+        const result = await cartCollection.insertOne(cart)
+        res.send(result)
+      }
+      console.log(cart)
     })
 
     app.post('/bulb',async(req,res)=>{
