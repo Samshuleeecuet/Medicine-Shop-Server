@@ -178,6 +178,8 @@ async function run() {
 
     })
 
+    // add to cart section
+
 
     app.post('/addtocart',async(req,res)=>{
       const cart = req.body;
@@ -195,6 +197,25 @@ async function run() {
       }
       console.log(cart)
     })
+
+    // increase and decrease quantity
+
+    app.post('/changequantity',async(req,res)=>{
+      const quantity = req.body;
+      console.log(quantity)
+      const found = await cartCollection.findOne(
+        {medicineId: quantity.id,
+          email:quantity.email
+        })
+      const updatedDoc = {
+        $set:{
+          quantity: quantity.newQty
+        }
+      }
+      const result = await cartCollection.updateOne(found,updatedDoc)
+      res.send(result)
+    })
+    
 
     app.post('/bulb',async(req,res)=>{
       const status = req.body;
